@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logan And Danikas Wedding Playlist</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="topbar">
+      <div>
+        <h1>Logan And Danikas Wedding Playlist</h1>
+        <p id="deviceText" class="muted">Checking playback device...</p>
+      </div>
+      <div class="topbar-actions">
+        <button id="refreshBtn" class="secondary-btn">Refresh</button>
+        <button id="logoutBtn" class="secondary-btn">Log Out</button>
+      </div>
+    </header>
+
+    <section class="card hero-card">
+      <h2>Add a Song</h2>
+      <p class="muted">
+        Search for a song and tap Queue to add it to the active Spotify queue.
+      </p>
+      <label for="searchInput">Search songs</label>
+      <input id="searchInput" type="text" placeholder="Search for a track..." autocomplete="off" />
+    </section>
+
+    <section id="messageBox" class="message hidden"></section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2>Playback Device</h2>
+          <p class="muted">Choose which Spotify device should receive queued songs.</p>
+        </div>
+      </div>
+
+      <label for="deviceSelect">Device</label>
+      <select id="deviceSelect"></select>
+
+      <div class="button-row">
+        <button id="useSelectedDeviceBtn" class="primary-btn">Use Selected Device</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <div>
+          <h2>Queue Preview</h2>
+          <p class="muted">
+            This reads Spotify’s current queue and updates as playback changes.
+          </p>
+        </div>
+        <div class="button-row">
+          <button id="refreshQueueBtn" class="secondary-btn">Refresh Queue</button>
+          <button id="clearPreviewBtn" class="secondary-btn">Clear Preview Display</button>
+        </div>
+      </div>
+
+      <div id="nowPlayingBox"></div>
+      <div id="queuePreview"></div>
+    </section>
+
+    <section class="card">
+      <h2>Results</h2>
+      <div id="results"></div>
+    </section>
+  </main>
+
+  <script src="./js/config.js"></script>
+  <script src="./js/auth.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>

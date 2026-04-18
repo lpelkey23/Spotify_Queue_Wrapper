@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logan And Danikas Wedding Playlist</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <main class="container center">
+    <div class="card narrow-card">
+      <h1>Logan And Danikas Wedding Playlist</h1>
+      <p class="muted">
+        Guests can search songs and add them to the Spotify queue.
+      </p>
+      <button id="loginBtn" class="primary-btn">Connect Spotify</button>
+      <p id="status" class="muted status-text"></p>
+    </div>
+  </main>
+
+  <script src="./js/config.js"></script>
+  <script src="./js/auth.js"></script>
+  <script>
+    (async function init() {
+      const statusEl = document.getElementById("status");
+      const loginBtn = document.getElementById("loginBtn");
+
+      try {
+        const loggedIn = await hasValidSession();
+        if (loggedIn) {
+          window.location.replace("./app.html");
+          return;
+        }
+      } catch (e) {
+        statusEl.textContent = "Could not check Spotify session.";
+      }
+
+      loginBtn.addEventListener("click", async () => {
+        statusEl.textContent = "Redirecting to Spotify...";
+        try {
+          await redirectToSpotifyLogin();
+        } catch (err) {
+          console.error(err);
+          statusEl.textContent = "Could not start Spotify login.";
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
