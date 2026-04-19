@@ -1,6 +1,6 @@
 const SPOTIFY_CONFIG = {
-  clientId: "YOUR_SPOTIFY_CLIENT_ID",
-  redirectUri: "https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPO_NAME/callback.html",
+  clientId: "4f186099c33c414285ee35b8e0d46a9b",
+  redirectUri: "https://lpelkey23.github.io/Spotify_Queue_Wrapper/callback.html",
   scopes: [
     "user-read-playback-state",
     "user-modify-playback-state"
