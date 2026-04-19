@@ -11,7 +11,7 @@
     <header class="topbar">
       <div>
         <h1>Logan And Danikas Wedding Playlist</h1>
-        <p id="deviceText" class="muted">Checking playback device...</p>
+        <p id="deviceText" class="muted">Checking Logan’s iPhone...</p>
       </div>
       <div class="topbar-actions">
         <button id="refreshBtn" class="secondary-btn">Refresh</button>
@@ -19,54 +19,55 @@
       </div>
     </header>
 
+    <section id="messageBox" class="message hidden"></section>
+
     <section class="card hero-card">
       <h2>Add a Song</h2>
       <p class="muted">
-        Search for a song and tap Queue to add it to the active Spotify queue.
+        Search for a song and tap Queue to add it to Logan’s iPhone.
       </p>
+
       <label for="searchInput">Search songs</label>
-      <input id="searchInput" type="text" placeholder="Search for a track..." autocomplete="off" />
-    </section>
-
-    <section id="messageBox" class="message hidden"></section>
-
-    <section class="card">
-      <div class="section-head">
-        <div>
-          <h2>Playback Device</h2>
-          <p class="muted">Choose which Spotify device should receive queued songs.</p>
-        </div>
-      </div>
-
-      <label for="deviceSelect">Device</label>
-      <select id="deviceSelect"></select>
-
-      <div class="button-row">
-        <button id="useSelectedDeviceBtn" class="primary-btn">Use Selected Device</button>
-      </div>
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Search for a track..."
+        autocomplete="off"
+      />
     </section>
 
     <section class="card">
       <div class="section-head">
         <div>
-          <h2>Queue Preview</h2>
-          <p class="muted">
-            This reads Spotify’s current queue and updates as playback changes.
-          </p>
-        </div>
-        <div class="button-row">
-          <button id="refreshQueueBtn" class="secondary-btn">Refresh Queue</button>
-          <button id="clearPreviewBtn" class="secondary-btn">Clear Preview Display</button>
+          <h2>Results</h2>
+          <p class="muted">Showing up to 15 songs.</p>
         </div>
       </div>
-
-      <div id="nowPlayingBox"></div>
-      <div id="queuePreview"></div>
-    </section>
-
-    <section class="card">
-      <h2>Results</h2>
       <div id="results"></div>
+    </section>
+
+    <section class="card">
+      <button id="toggleQueueBtn" class="secondary-btn full-width">
+        Show Queue Preview
+      </button>
+
+      <div id="queueSection" class="hidden queue-section">
+        <div class="section-head queue-head">
+          <div>
+            <h2>Queue Preview</h2>
+            <p class="muted">
+              Updates from Spotify’s current queue.
+            </p>
+          </div>
+          <div class="button-row">
+            <button id="refreshQueueBtn" class="secondary-btn">Refresh Queue</button>
+            <button id="clearPreviewBtn" class="secondary-btn">Clear Preview</button>
+          </div>
+        </div>
+
+        <div id="nowPlayingBox"></div>
+        <div id="queuePreview"></div>
+      </div>
     </section>
   </main>
 

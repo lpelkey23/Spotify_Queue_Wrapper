@@ -1,12 +1,15 @@
+const LOCKED_DEVICE_NAME = "iPhone"; // change this if Spotify shows a slightly different name
+
 const state = {
   activeDeviceId: "",
   activeDeviceName: "",
   currentTrackUri: "",
+  currentTrackObj: null,
   queueTracks: [],
-  devices: [],
   searchTimer: null,
   lastQuery: "",
   lastResults: [],
+  queueOpen: false,
   queuePollTimer: null
 };
 
@@ -35,6 +38,14 @@ function setDeviceText(text) {
   document.getElementById("deviceText").textContent = text;
 }
 
+function getLockedIphone(devices) {
+  return devices.find(
+    d =>
+      d.name === LOCKED_DEVICE_NAME ||
+      d.name.toLowerCase() === LOCKED_DEVICE_NAME.toLowerCase()
+  ) || null;
+}
+
 function isDuplicateTrack(track) {
   if (!track?.uri) return false;
   if (track.uri === state.currentTrackUri) return true;
@@ -44,31 +55,25 @@ function isDuplicateTrack(track) {
 function renderNowPlaying() {
   const nowPlayingEl = document.getElementById("nowPlayingBox");
 
-  if (!state.currentTrackUri) {
+  if (!state.currentTrackObj) {
     nowPlayingEl.innerHTML = `
       <div class="now-playing-item">
         <div class="track-meta">
           <div class="track-title">Nothing currently playing</div>
-          <div class="track-subtitle">Start Spotify on your selected device.</div>
+          <div class="track-subtitle">Start Spotify on Logan’s iPhone first.</div>
         </div>
       </div>
     `;
     return;
   }
 
-  const current = state.currentTrackObj;
-  if (!current) {
-    nowPlayingEl.innerHTML = "";
-    return;
-  }
-
-  const artists = (current.artists || []).map(a => a.name).join(", ");
-  const album = current.album?.name || "";
+  const artists = (state.currentTrackObj.artists || []).map(a => a.name).join(", ");
+  const album = state.currentTrackObj.album?.name || "";
 
   nowPlayingEl.innerHTML = `
     <div class="now-playing-item">
       <div class="track-meta">
-        <div class="track-title">Now Playing: ${escapeHtml(current.name)}</div>
+        <div class="track-title">Now Playing: ${escapeHtml(state.currentTrackObj.name)}</div>
         <div class="track-subtitle">${escapeHtml(artists)} · ${escapeHtml(album)}</div>
       </div>
       <div class="queue-badge">Live</div>
@@ -103,65 +108,79 @@ function renderQueuePreview() {
   });
 }
 
-function renderDeviceSelect() {
-  const select = document.getElementById("deviceSelect");
-  select.innerHTML = "";
+function renderResults(tracks) {
+  const resultsEl = document.getElementById("results");
 
-  if (!state.devices.length) {
-    const option = document.createElement("option");
-    option.value = "";
-    option.textContent = "No Spotify devices found";
-    select.appendChild(option);
+  if (!tracks.length) {
+    resultsEl.innerHTML = `<p class="empty-state">No results yet.</p>`;
     return;
   }
 
-  state.devices.forEach(device => {
-    const option = document.createElement("option");
-    option.value = device.id;
+  resultsEl.innerHTML = "";
 
-    let label = device.name;
-    if (device.is_active) label += " (Active)";
-    if (device.id === state.activeDeviceId) label += " (Selected)";
+  for (const track of tracks) {
+    const artists = (track.artists || []).map(a => a.name).join(", ");
+    const album = track.album?.name || "";
+    const duplicate = isDuplicateTrack(track);
 
-    option.textContent = label;
-    option.selected = device.id === state.activeDeviceId;
-    select.appendChild(option);
-  });
+    const row = document.createElement("div");
+    row.className = "result-item";
+
+    row.innerHTML = `
+      <div class="track-meta">
+        <div class="track-title">${escapeHtml(track.name)}</div>
+        <div class="track-subtitle">${escapeHtml(artists)} · ${escapeHtml(album)}</div>
+      </div>
+      <button class="queue-btn" ${duplicate ? "disabled" : ""}>
+        ${duplicate ? "Already Queued" : "Queue"}
+      </button>
+    `;
+
+    row.querySelector(".queue-btn").addEventListener("click", async () => {
+      try {
+        if (!state.activeDeviceId) {
+          showMessage("Logan’s iPhone is not currently available in Spotify.", true);
+          return;
+        }
+
+        if (isDuplicateTrack(track)) {
+          showMessage("That song is already playing or already in the queue.", true);
+          return;
+        }
+
+        await queueTrack(track.uri, state.activeDeviceId);
+        showMessage(`Queued: ${track.name}`);
+
+        await refreshQueueState();
+      } catch (err) {
+        console.error(err);
+        showMessage("Could not queue track.", true);
+      }
+    });
+
+    resultsEl.appendChild(row);
+  }
 }
 
 async function refreshDeviceState() {
   try {
-    const playback = await getCurrentPlayback();
     const devices = await getAvailableDevices();
+    const iphone = getLockedIphone(devices);
 
-    state.devices = devices;
-
-    let activeDevice = playback?.device || devices.find(d => d.is_active) || null;
-
-    const saved = localStorage.getItem("spotify_selected_device_id");
-    if (!activeDevice && saved) {
-      activeDevice = devices.find(d => d.id === saved) || null;
-    }
-    if (!activeDevice && devices.length > 0) {
-      activeDevice = devices[0];
-    }
-
-    if (activeDevice) {
-      state.activeDeviceId = activeDevice.id;
-      state.activeDeviceName = activeDevice.name;
-      localStorage.setItem("spotify_selected_device_id", activeDevice.id);
-      setDeviceText(`Controlling: ${activeDevice.name}`);
-    } else {
+    if (!iphone) {
       state.activeDeviceId = "";
       state.activeDeviceName = "";
-      setDeviceText("No active Spotify device found. Start Spotify on your phone first.");
+      setDeviceText(`Could not find ${LOCKED_DEVICE_NAME}. Open Spotify on that iPhone first.`);
+      return;
     }
 
-    renderDeviceSelect();
+    state.activeDeviceId = iphone.id;
+    state.activeDeviceName = iphone.name;
+    setDeviceText(`Controlling: ${iphone.name}`);
   } catch (err) {
     console.error(err);
-    state.devices = [];
-    renderDeviceSelect();
+    state.activeDeviceId = "";
+    state.activeDeviceName = "";
     setDeviceText("Could not load Spotify devices.");
   }
 }
@@ -194,6 +213,7 @@ async function performSearch(query) {
     const tracks = await searchTracks(query);
 
     if (state.lastQuery !== query) return;
+
     state.lastResults = tracks;
     renderResults(tracks);
   } catch (err) {
@@ -202,95 +222,27 @@ async function performSearch(query) {
   }
 }
 
-function renderResults(tracks) {
-  const resultsEl = document.getElementById("results");
-
-  if (!tracks.length) {
-    resultsEl.innerHTML = `<p class="empty-state">No results yet.</p>`;
-    return;
-  }
-
-  resultsEl.innerHTML = "";
-
-  for (const track of tracks) {
-    const artists = (track.artists || []).map(a => a.name).join(", ");
-    const album = track.album?.name || "";
-    const duplicate = isDuplicateTrack(track);
-
-    const row = document.createElement("div");
-    row.className = "result-item";
-
-    row.innerHTML = `
-      <div class="track-meta">
-        <div class="track-title">${escapeHtml(track.name)}</div>
-        <div class="track-subtitle">${escapeHtml(artists)} · ${escapeHtml(album)}</div>
-      </div>
-      <button class="queue-btn" ${duplicate ? "disabled" : ""}>
-        ${duplicate ? "Already Queued" : "Queue"}
-      </button>
-    `;
-
-    row.querySelector(".queue-btn").addEventListener("click", async () => {
-      try {
-        if (isDuplicateTrack(track)) {
-          showMessage("That song is already playing or already in the queue.", true);
-          return;
-        }
-
-        if (!state.activeDeviceId) {
-          await refreshDeviceState();
-        }
-
-        if (!state.activeDeviceId) {
-          showMessage("No Spotify device selected.", true);
-          return;
-        }
-
-        await queueTrack(track.uri, state.activeDeviceId);
-        showMessage(`Queued: ${track.name}`);
-
-        await refreshQueueState();
-      } catch (err) {
-        console.error(err);
-        showMessage("Could not queue track.", true);
-      }
-    });
-
-    resultsEl.appendChild(row);
-  }
-}
-
-async function useSelectedDevice() {
-  const select = document.getElementById("deviceSelect");
-  const deviceId = select.value;
-
-  if (!deviceId) {
-    showMessage("Select a Spotify device first.", true);
-    return;
-  }
-
-  try {
-    await transferPlaybackToDevice(deviceId, true);
-    localStorage.setItem("spotify_selected_device_id", deviceId);
-    await refreshAll();
-    showMessage("Playback device updated.");
-  } catch (err) {
-    console.error(err);
-    showMessage("Could not switch playback device.", true);
-  }
-}
-
 function clearPreviewDisplayOnly() {
-  document.getElementById("queuePreview").innerHTML =
-    `<p class="empty-state">Preview cleared locally. Refresh Queue to load Spotify’s real queue again.</p>`;
   document.getElementById("nowPlayingBox").innerHTML = "";
-  showMessage("Preview display cleared. Spotify’s actual queue was not changed.", true);
+  document.getElementById("queuePreview").innerHTML =
+    `<p class="empty-state">Preview cleared locally. Tap Refresh Queue to load Spotify’s current queue again.</p>`;
+  showMessage("Preview cleared. Spotify’s actual queue was not changed.", true);
+}
+
+function setQueueOpen(isOpen) {
+  state.queueOpen = isOpen;
+  document.getElementById("queueSection").classList.toggle("hidden", !isOpen);
+  document.getElementById("toggleQueueBtn").textContent = isOpen
+    ? "Hide Queue Preview"
+    : "Show Queue Preview";
 }
 
 function setupPolling() {
   clearInterval(state.queuePollTimer);
   state.queuePollTimer = setInterval(async () => {
-    await refreshQueueState();
+    if (state.queueOpen) {
+      await refreshQueueState();
+    }
   }, 10000);
 }
 
@@ -308,13 +260,21 @@ async function initApp() {
 
   document.getElementById("refreshBtn").addEventListener("click", refreshAll);
   document.getElementById("refreshQueueBtn").addEventListener("click", refreshQueueState);
-  document.getElementById("useSelectedDeviceBtn").addEventListener("click", useSelectedDevice);
   document.getElementById("clearPreviewBtn").addEventListener("click", clearPreviewDisplayOnly);
+
+  document.getElementById("toggleQueueBtn").addEventListener("click", () => {
+    const nextOpen = !state.queueOpen;
+    setQueueOpen(nextOpen);
+    if (nextOpen) {
+      refreshQueueState();
+    }
+  });
 
   document.getElementById("searchInput").addEventListener("input", (e) => {
     const query = e.target.value.trim();
 
     clearTimeout(state.searchTimer);
+
     if (!query) {
       state.lastResults = [];
       renderResults([]);
@@ -323,10 +283,12 @@ async function initApp() {
 
     state.searchTimer = setTimeout(async () => {
       await performSearch(query);
-    }, 300);
+    }, 250);
   });
 
+  setQueueOpen(false);
   await refreshAll();
+  renderResults([]);
   setupPolling();
 }
 

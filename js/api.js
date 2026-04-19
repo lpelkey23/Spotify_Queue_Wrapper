@@ -20,6 +20,7 @@ async function spotifyFetch(path, options = {}) {
   if (contentType.includes("application/json")) {
     return await res.json();
   }
+
   return null;
 }
 
@@ -51,14 +52,14 @@ async function searchTracks(query) {
   const params = new URLSearchParams({
     q: query,
     type: "track",
-    limit: "20"
+    limit: "15"
   });
 
   const data = await spotifyFetch(`/search?${params.toString()}`);
   return data?.tracks?.items || [];
 }
 
-async function queueTrack(trackUri, deviceId = "") {
+async function queueTrack(trackUri, deviceId) {
   const params = new URLSearchParams({ uri: trackUri });
   if (deviceId) {
     params.set("device_id", deviceId);
@@ -66,18 +67,5 @@ async function queueTrack(trackUri, deviceId = "") {
 
   return await spotifyFetch(`/me/player/queue?${params.toString()}`, {
     method: "POST"
-  });
-}
-
-async function transferPlaybackToDevice(deviceId, play = true) {
-  return await spotifyFetch("/me/player", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      device_ids: [deviceId],
-      play
-    })
   });
 }
