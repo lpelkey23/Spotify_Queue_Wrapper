@@ -49,14 +49,12 @@ async function getUserQueue() {
 }
 
 async function searchTracks(query) {
-  const params = new URLSearchParams({
-    q: query,
-    type: "track",
-    limit: "15"
-  });
+  const params = new URLSearchParams();
+  params.set("q", query);
+  params.set("type", "track");
 
   const data = await spotifyFetch(`/search?${params.toString()}`);
-  return data?.tracks?.items || [];
+  return (data?.tracks?.items || []).slice(0, 15);
 }
 
 async function queueTrack(trackUri, deviceId) {
