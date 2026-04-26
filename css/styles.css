@@ -195,6 +195,66 @@ label {
   color: var(--muted);
 }
 
+.full-width {
+  width: 100%;
+}
+
+/* iPad portrait: bigger touch targets */
+@media (min-width: 768px) {
+  .primary-btn,
+  .secondary-btn,
+  .queue-btn {
+    padding: 16px 22px;
+    font-size: 17px;
+    min-height: 52px;
+  }
+
+  input[type="text"] {
+    padding: 18px;
+    font-size: 19px;
+    margin-top: 12px;
+  }
+
+  .track-title {
+    font-size: 19px;
+  }
+
+  .result-item,
+  .queue-item,
+  .now-playing-item {
+    padding: 18px 0;
+  }
+}
+
+/* iPad landscape / two-column layout */
+@media (min-width: 900px) {
+  .container {
+    max-width: 1200px;
+  }
+
+  .app-layout {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .app-right .queue-card {
+    position: sticky;
+    top: 24px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+  }
+
+  #toggleQueueBtn {
+    display: none;
+  }
+
+  #queueSection {
+    display: block !important;
+  }
+}
+
 @media (max-width: 700px) {
   .topbar,
   .result-item,
