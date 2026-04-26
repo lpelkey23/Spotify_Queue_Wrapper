@@ -9,14 +9,7 @@
 <body>
   <main class="container">
     <header class="topbar">
-      <div>
-        <h1>Logan And Danikas Wedding Playlist</h1>
-        <p id="deviceText" class="muted">Checking Logan’s iPhone...</p>
-      </div>
-      <div class="topbar-actions">
-        <button id="refreshBtn" class="secondary-btn">Refresh</button>
-        <button id="logoutBtn" class="secondary-btn">Log Out</button>
-      </div>
+      <h1>Logan And Danikas Wedding Playlist</h1>
     </header>
 
     <section id="messageBox" class="message hidden"></section>
@@ -51,27 +44,8 @@
 
       <div class="app-right">
         <section class="card queue-card">
-          <button id="toggleQueueBtn" class="secondary-btn full-width">
-            Show Queue Preview
-          </button>
-
-          <div id="queueSection" class="hidden queue-section">
-            <div class="section-head queue-head">
-              <div>
-                <h2>Queue Preview</h2>
-                <p class="muted">
-                  Updates from Spotify’s current queue.
-                </p>
-              </div>
-              <div class="button-row">
-                <button id="refreshQueueBtn" class="secondary-btn">Refresh Queue</button>
-                <button id="clearPreviewBtn" class="secondary-btn">Clear Preview</button>
-              </div>
-            </div>
-
-            <div id="nowPlayingBox"></div>
-            <div id="queuePreview"></div>
-          </div>
+          <div id="nowPlayingBox"></div>
+          <div id="queuePreview"></div>
         </section>
       </div>
     </div>

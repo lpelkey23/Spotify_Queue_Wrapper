@@ -9,7 +9,6 @@ const state = {
   searchTimer: null,
   lastQuery: "",
   lastResults: [],
-  queueOpen: false,
   queuePollTimer: null
 };
 
@@ -34,10 +33,6 @@ function showMessage(text, isError = false) {
   }, 3000);
 }
 
-function setDeviceText(text) {
-  document.getElementById("deviceText").textContent = text;
-}
-
 function getLockedIphone(devices) {
   return devices.find(
     d =>
@@ -60,7 +55,7 @@ function renderNowPlaying() {
       <div class="now-playing-item">
         <div class="track-meta">
           <div class="track-title">Nothing currently playing</div>
-          <div class="track-subtitle">Start Spotify on Logan’s iPhone first.</div>
+          <div class="track-subtitle">Start Spotify on Logan's iPhone first.</div>
         </div>
       </div>
     `;
@@ -139,7 +134,7 @@ function renderResults(tracks) {
     row.querySelector(".queue-btn").addEventListener("click", async () => {
       try {
         if (!state.activeDeviceId) {
-          showMessage("Logan’s iPhone is not currently available in Spotify.", true);
+          showMessage("Logan's iPhone is not currently available in Spotify.", true);
           return;
         }
 
@@ -160,6 +155,9 @@ function renderResults(tracks) {
 
     resultsEl.appendChild(row);
   }
+
+  // scroll results into view so keyboard doesn't cover them
+  resultsEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 async function refreshDeviceState() {
@@ -170,18 +168,15 @@ async function refreshDeviceState() {
     if (!iphone) {
       state.activeDeviceId = "";
       state.activeDeviceName = "";
-      setDeviceText(`Could not find ${LOCKED_DEVICE_NAME}. Open Spotify on that iPhone first.`);
       return;
     }
 
     state.activeDeviceId = iphone.id;
     state.activeDeviceName = iphone.name;
-    setDeviceText(`Controlling: ${iphone.name}`);
   } catch (err) {
     console.error(err);
     state.activeDeviceId = "";
     state.activeDeviceName = "";
-    setDeviceText("Could not load Spotify devices.");
   }
 }
 
@@ -222,28 +217,21 @@ async function performSearch(query) {
   }
 }
 
-function clearPreviewDisplayOnly() {
-  document.getElementById("nowPlayingBox").innerHTML = "";
-  document.getElementById("queuePreview").innerHTML =
-    `<p class="empty-state">Preview cleared locally. Tap Refresh Queue to load Spotify’s current queue again.</p>`;
-  showMessage("Preview cleared. Spotify’s actual queue was not changed.", true);
-}
-
-function setQueueOpen(isOpen) {
-  state.queueOpen = isOpen;
-  document.getElementById("queueSection").classList.toggle("hidden", !isOpen);
-  document.getElementById("toggleQueueBtn").textContent = isOpen
-    ? "Hide Queue Preview"
-    : "Show Queue Preview";
-}
-
 function setupPolling() {
   clearInterval(state.queuePollTimer);
-  state.queuePollTimer = setInterval(async () => {
-    if (state.queueOpen) {
-      await refreshQueueState();
+  state.queuePollTimer = setInterval(refreshQueueState, 10000);
+}
+
+function setupKeyboardAvoidance() {
+  if (!window.visualViewport) return;
+
+  window.visualViewport.addEventListener("resize", () => {
+    const keyboardHeight = window.innerHeight - window.visualViewport.height;
+    const left = document.querySelector(".app-left");
+    if (left) {
+      left.style.paddingBottom = keyboardHeight > 150 ? keyboardHeight + "px" : "";
     }
-  }, 10000);
+  });
 }
 
 async function initApp() {
@@ -252,23 +240,6 @@ async function initApp() {
     window.location.replace("./index.html");
     return;
   }
-
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    logout();
-    window.location.replace("./index.html");
-  });
-
-  document.getElementById("refreshBtn").addEventListener("click", refreshAll);
-  document.getElementById("refreshQueueBtn").addEventListener("click", refreshQueueState);
-  document.getElementById("clearPreviewBtn").addEventListener("click", clearPreviewDisplayOnly);
-
-  document.getElementById("toggleQueueBtn").addEventListener("click", () => {
-    const nextOpen = !state.queueOpen;
-    setQueueOpen(nextOpen);
-    if (nextOpen) {
-      refreshQueueState();
-    }
-  });
 
   document.getElementById("searchInput").addEventListener("input", (e) => {
     const query = e.target.value.trim();
@@ -286,7 +257,7 @@ async function initApp() {
     }, 250);
   });
 
-  setQueueOpen(false);
+  setupKeyboardAvoidance();
   await refreshAll();
   renderResults([]);
   setupPolling();
