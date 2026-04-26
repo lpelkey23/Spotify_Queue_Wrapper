@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#121212"/>
+  <!-- heart -->
+  <path d="M256 370 C256 370 140 290 140 210 C140 170 175 145 215 160 C235 168 248 182 256 195 C264 182 277 168 297 160 C337 145 372 170 372 210 C372 290 256 370 256 370Z" fill="#e05c7a"/>
+  <!-- music note -->
+  <text x="256" y="285" font-size="90" text-anchor="middle" fill="#1db954" font-family="Arial, sans-serif" font-weight="bold">♪</text>
+</svg>
