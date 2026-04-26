@@ -281,10 +281,22 @@ label {
 
   .queue-card {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+  }
+
+  .queue-card #nowPlayingBox {
+    flex-shrink: 0;
+  }
+
+  .queue-card #queuePreview {
+    flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     min-height: 0;
-    margin-bottom: 0;
   }
 
   /* right col: results scroll */
@@ -297,10 +309,18 @@ label {
 
   .results-card {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+  }
+
+  .results-card #results {
+    flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     min-height: 0;
-    margin-bottom: 0;
   }
 }
 
