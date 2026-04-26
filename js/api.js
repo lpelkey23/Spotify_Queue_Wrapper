@@ -11,6 +11,11 @@ async function spotifyFetch(path, options = {}) {
 
   if (res.status === 204) return null;
 
+  if (res.status === 401) {
+    window.location.replace("./index.html");
+    return;
+  }
+
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Spotify API error ${res.status}: ${text}`);

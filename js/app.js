@@ -155,9 +155,6 @@ function renderResults(tracks) {
 
     resultsEl.appendChild(row);
   }
-
-  // scroll results into view so keyboard doesn't cover them
-  resultsEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 async function refreshDeviceState() {
@@ -225,11 +222,16 @@ function setupPolling() {
 function setupKeyboardAvoidance() {
   if (!window.visualViewport) return;
 
+  let lastVVHeight = window.visualViewport.height;
+
   window.visualViewport.addEventListener("resize", () => {
-    const keyboardHeight = window.innerHeight - window.visualViewport.height;
-    const left = document.querySelector(".app-left");
-    if (left) {
-      left.style.paddingBottom = keyboardHeight > 150 ? keyboardHeight + "px" : "";
+    const newHeight = window.visualViewport.height;
+    const delta = lastVVHeight - newHeight;
+    lastVVHeight = newHeight;
+
+    // keyboard just opened
+    if (delta > 150 && state.lastResults.length > 0) {
+      document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
     }
   });
 }
