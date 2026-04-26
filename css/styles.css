@@ -62,13 +62,14 @@ body {
   gap: 16px;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   flex-shrink: 0;
 }
 
 .topbar h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 18px;
+  line-height: 1;
 }
 
 .topbar-actions,
@@ -248,7 +249,7 @@ label {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: 16px 24px;
+    padding: 8px 24px 16px;
   }
 
   #messageBox {
@@ -259,9 +260,9 @@ label {
     flex: 1;
     display: grid;
     grid-template-columns: 380px 1fr;
+    grid-template-rows: 1fr;
     gap: 20px;
     min-height: 0;
-    overflow: hidden;
   }
 
   /* left col: search fixed top, queue scrolls below */
@@ -281,6 +282,7 @@ label {
   .queue-card {
     flex: 1;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     min-height: 0;
     margin-bottom: 0;
   }
@@ -296,6 +298,7 @@ label {
   .results-card {
     flex: 1;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     min-height: 0;
     margin-bottom: 0;
   }
