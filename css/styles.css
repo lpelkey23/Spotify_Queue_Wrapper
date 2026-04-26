@@ -48,9 +48,12 @@ body {
   margin-bottom: 20px;
 }
 
-.hero-card h2,
 .card h2,
 .card h1 {
+  margin-top: 0;
+}
+
+.hero-card p {
   margin-top: 0;
 }
 
@@ -59,7 +62,13 @@ body {
   gap: 16px;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 22px;
 }
 
 .topbar-actions,
@@ -226,24 +235,69 @@ label {
   }
 }
 
-/* iPad landscape / two-column layout */
+/* iPad landscape / two-column fixed layout */
 @media (min-width: 900px) {
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
   .container {
-    max-width: 1200px;
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 16px 24px;
+  }
+
+  #messageBox {
+    flex-shrink: 0;
   }
 
   .app-layout {
+    flex: 1;
     display: grid;
-    grid-template-columns: 1fr 400px;
+    grid-template-columns: 380px 1fr;
     gap: 20px;
-    align-items: start;
+    min-height: 0;
+    overflow: hidden;
   }
 
-  .app-right .queue-card {
-    position: sticky;
-    top: 24px;
-    max-height: calc(100vh - 48px);
+  /* left col: search fixed top, queue scrolls below */
+  .app-left {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .hero-card {
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+
+  .queue-card {
+    flex: 1;
     overflow-y: auto;
+    min-height: 0;
+    margin-bottom: 0;
+  }
+
+  /* right col: results scroll */
+  .app-right {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .results-card {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    margin-bottom: 0;
   }
 }
 

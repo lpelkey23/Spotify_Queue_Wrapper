@@ -17,12 +17,7 @@
     <div class="app-layout">
       <div class="app-left">
         <section class="card hero-card">
-          <h2>Add a Song</h2>
-          <p class="muted">
-            Search for a song and tap Queue to add it to Logan’s iPhone.
-          </p>
-
-          <label for="searchInput">Search songs</label>
+          <p class="muted">Search for a song and tap Queue to add it to Logan’s iPhone.</p>
           <input
             id="searchInput"
             type="text"
@@ -31,21 +26,15 @@
           />
         </section>
 
-        <section class="card">
-          <div class="section-head">
-            <div>
-              <h2>Results</h2>
-              <p class="muted">Showing up to 15 songs.</p>
-            </div>
-          </div>
-          <div id="results"></div>
+        <section class="card queue-card">
+          <div id="nowPlayingBox"></div>
+          <div id="queuePreview"></div>
         </section>
       </div>
 
       <div class="app-right">
-        <section class="card queue-card">
-          <div id="nowPlayingBox"></div>
-          <div id="queuePreview"></div>
+        <section class="card results-card">
+          <div id="results"></div>
         </section>
       </div>
     </div>
