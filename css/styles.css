@@ -70,6 +70,17 @@ body {
   margin: 0;
   font-size: 18px;
   line-height: 1;
+  background: linear-gradient(90deg, #ff0000, #ff7700, #ffff00, #00cc00, #0099ff, #6600ff, #ff00cc, #ff0000);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbow-wave 5s linear infinite;
+}
+
+@keyframes rainbow-wave {
+  0%   { background-position: 0% center; }
+  100% { background-position: 300% center; }
 }
 
 .topbar-actions,
@@ -200,6 +211,22 @@ label {
   font-size: 13px;
   white-space: nowrap;
 }
+
+.live-badge {
+  background: #7a0000;
+  color: #ff4444;
+  font-weight: bold;
+  animation: flash-red 1s ease-in-out infinite;
+}
+
+@keyframes flash-red {
+  0%, 100% { opacity: 1; color: #ff4444; }
+  50%       { opacity: 0.4; color: #ff0000; }
+}
+
+.gold-badge   { background: #3a2e00; color: #ffd700; font-weight: bold; }
+.silver-badge { background: #252525; color: #c0c0c0; font-weight: bold; }
+.bronze-badge { background: #2e1a00; color: #cd7f32; font-weight: bold; }
 
 .empty-state {
   color: var(--muted);

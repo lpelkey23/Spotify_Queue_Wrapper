@@ -71,7 +71,7 @@ function renderNowPlaying() {
         <div class="track-title">Now Playing: ${escapeHtml(state.currentTrackObj.name)}</div>
         <div class="track-subtitle">${escapeHtml(artists)} · ${escapeHtml(album)}</div>
       </div>
-      <div class="queue-badge">Live</div>
+      <div class="queue-badge live-badge">Live</div>
     </div>
   `;
 }
@@ -90,6 +90,7 @@ function renderQueuePreview() {
     const artists = (track.artists || []).map(a => a.name).join(", ");
     const album = track.album?.name || "";
 
+    const medalClass = index === 0 ? 'gold-badge' : index === 1 ? 'silver-badge' : index === 2 ? 'bronze-badge' : '';
     const row = document.createElement("div");
     row.className = "queue-item";
     row.innerHTML = `
@@ -97,7 +98,7 @@ function renderQueuePreview() {
         <div class="track-title">${escapeHtml(track.name)}</div>
         <div class="track-subtitle">${escapeHtml(artists)} · ${escapeHtml(album)}</div>
       </div>
-      <div class="queue-badge">#${index + 1}</div>
+      <div class="queue-badge ${medalClass}">#${index + 1}</div>
     `;
     previewEl.appendChild(row);
   });
