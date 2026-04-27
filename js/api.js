@@ -57,6 +57,7 @@ async function searchTracks(query) {
   const params = new URLSearchParams();
   params.set("q", query);
   params.set("type", "track");
+  params.set("offset", "0");
   params.set("limit", "20");
 
   const data = await spotifyFetch(`/search?${params.toString()}`);
