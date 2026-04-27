@@ -249,7 +249,7 @@ async function initApp() {
 
     clearTimeout(state.searchTimer);
 
-    if (!query) {
+    if (query.length < 2) {
       state.lastResults = [];
       renderResults([]);
       return;
