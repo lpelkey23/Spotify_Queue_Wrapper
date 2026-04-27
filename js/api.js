@@ -58,7 +58,7 @@ async function searchTracks(query) {
   params.set("q", query);
   params.set("type", "track");
   params.set("offset", "0");
-  params.set("limit", "20");
+  params.set("limit", "10");
 
   const data = await spotifyFetch(`/search?${params.toString()}`);
   return data?.tracks?.items || [];
